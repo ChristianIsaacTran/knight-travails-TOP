@@ -57,9 +57,13 @@ export default function knight() {
 
         // finally, iterate through the step array now that it is in order and console.log the shortest path
         console.log("SHORTEST PATH TO END GOAL: ------");
+        let stepCounter = 0;
         stepArr.forEach((step) => {
             console.log(step);
+            stepCounter += 1;
         });
+
+        console.log(`You made it in ${stepCounter} moves!`);
     }
 
     // given a position, calculate the possible moves that don't violate the 0-7 index board and enqueue them if they HAVEN'T been visited

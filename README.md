@@ -39,6 +39,16 @@ the algorithm will use BFS to output all of the locations it took to end at that
 
 # new plan: 
 Like the node factories I made in the last projects, I am going to make an object that 
-has a visited property and a "parent" pointer property so that I can retrace the steps. 
-Printing out the BFS steps aren't going to give me the shortest path order, I need to keep track of what steps I took 
-to get to EVERY node.
+has a "parent" pointer property so that I can retrace the steps. 
+Printing out the BFS steps isn't going to give me the shortest path order, I need to keep track of what steps I took 
+to get to EVERY node when I generate new steps. So the plan is: 
+
+1. start with given position
+2. add the given position to our visited list because we are currently visiting it while generating new steps
+3. when generating new steps from the origin position, make sure to assign EVERY new step's parent vertex to be the position I am calculating from 
+4. enqueue the steps that are valid. If a generated step is out of bounds or in our visited list, then it is invalid so do not enqueue
+5. get new step from queue and repeat steps 2-5 until we reach the end of the queue or found the end position during traversal
+
+Doing it this way will BFS through ALL possible steps up until we reach the end point, then we can form our shortest route through iterating through 
+the parent steps backwards since they all link to each other (like a linked list). Make sure to reverse the list after iteration since we are going 
+from the end to the beginning when going through the parent vertex properties.
