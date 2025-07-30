@@ -1,7 +1,9 @@
 /* eslint-disable no-magic-numbers */
+import vertex from "./vertex.js";
+
 export default function knight() {
     let queue = [];
-    const visitedMoves = [];
+    const visitedVertices = [];
     /*
     returns the path to get to the endPos from startPos through edges ex: [0, 1]
     - will be limited to a standard chess board from 0 to 7 in both dimensions (an 8x8 standard chess board)
@@ -9,47 +11,109 @@ export default function knight() {
     - this will be using the BFS logic from last lessons, but used on a graph instead of a BST. It should work the same way.
     */
     function knightMoves(startPos, endPos) {
-        console.log(`start position: ${startPos}`)
+        console.log(`start position: ${startPos}`);
+        console.log(`start position: ${endPos}`);
+
+        // make a new vertex object for the start position and find the first possible moves
+        const startVertex = vertex(startPos);
+        let endVertex;
+
         // enqueue all of the possible moves knight can move from first position to start
-        findAllPossibleMoves(startPos);
+        findAllPossibleMoves(startVertex);
 
+        // loop through queue and get ALL possible moves until we reach the end position.
         while (queue.length > 0) {
-            // add dequeued position into visited to mark it as visited
-            visitedMoves.push(queue[0]);
-
-            // dequeue position
-            const currentPos = queue.shift();
+            // dequeue position, mark as visited
+            const currentVertex = queue.shift();
 
             // if the destination has been reached, stop the traversal
-            if (currentPos[0] === endPos[0] && currentPos[1] === endPos[1]) {
-                return console.log(`last position: ${currentPos}`);
+            if (
+                currentVertex.vertexValue[0] === endPos[0] &&
+                currentVertex.vertexValue[1] === endPos[1]
+            ) {
+                endVertex = currentVertex;
+                break;
             }
 
-            // print out current step in the traversal
-            console.log(`current position: ${currentPos}`);
-
             // enqueue all possible next steps from current position
-            findAllPossibleMoves(currentPos);
-
-            console.log(queue);
-            console.log(visitedMoves);
+            findAllPossibleMoves(currentVertex);
         }
+
+        // loop through until we reach the end steps by pushing the parent vertex. We are looping from the end to the beginning so reverse the array after getting all steps
+        let stepArr = [];
+        let currStepVertex = endVertex;
+        while (currStepVertex !== null) {
+            // push step into step array to be reversed later
+            stepArr.push(currStepVertex.vertexValue);
+
+            // move onto the previous step from the current vertex's parent step
+            currStepVertex = currStepVertex.parentVertex;
+
+            // keep going until we reach null (beginning step)
+        }
+
+        // reverse the list since we iterated from the end to the start
+        stepArr = stepArr.reverse();
+
+        // finally, iterate through the step array now that it is in order and console.log the shortest path
+        console.log("SHORTEST PATH TO END GOAL: ------");
+        stepArr.forEach((step) => {
+            console.log(step);
+        });
     }
 
-    // given a position, calculate the possible moves that don't violate the 0-7 index board and enqueue them
-    function findAllPossibleMoves(givenPos) {
+    // given a position, calculate the possible moves that don't violate the 0-7 index board and enqueue them if they HAVEN'T been visited
+    function findAllPossibleMoves(givenVertex) {
+        // add the givenVertex to the visited list since that is our current vertex we are visiting
+        visitedVertices.push(givenVertex);
+
         let tempArr = [];
         // 8 possible moves a knight can make from givenPos. If they go out of bounds, do NOT enqueue them
         // 2 spaces up, one space to the left
-        const upLeft = [givenPos[0] - 1, givenPos[1] + 2];
-        const upRight = [givenPos[0] + 1, givenPos[1] + 2];
-        const leftUp = [givenPos[0] - 2, givenPos[1] + 1];
-        const leftDown = [givenPos[0] - 2, givenPos[1] - 1];
-        const rightUp = [givenPos[0] + 2, givenPos[1] + 1];
-        const rightDown = [givenPos[0] + 2, givenPos[1] - 1];
-        const downLeft = [givenPos[0] - 1, givenPos[1] - 2];
-        const downRight = [givenPos[0] + 1, givenPos[1] - 2];
+        const upLeft = vertex([
+            givenVertex.vertexValue[0] - 1,
+            givenVertex.vertexValue[1] + 2,
+        ]);
+        const upRight = vertex([
+            givenVertex.vertexValue[0] + 1,
+            givenVertex.vertexValue[1] + 2,
+        ]);
+        const leftUp = vertex([
+            givenVertex.vertexValue[0] - 2,
+            givenVertex.vertexValue[1] + 1,
+        ]);
+        const leftDown = vertex([
+            givenVertex.vertexValue[0] - 2,
+            givenVertex.vertexValue[1] - 1,
+        ]);
+        const rightUp = vertex([
+            givenVertex.vertexValue[0] + 2,
+            givenVertex.vertexValue[1] + 1,
+        ]);
+        const rightDown = vertex([
+            givenVertex.vertexValue[0] + 2,
+            givenVertex.vertexValue[1] - 1,
+        ]);
+        const downLeft = vertex([
+            givenVertex.vertexValue[0] - 1,
+            givenVertex.vertexValue[1] - 2,
+        ]);
+        const downRight = vertex([
+            givenVertex.vertexValue[0] + 1,
+            givenVertex.vertexValue[1] - 2,
+        ]);
 
+        // track the next move's previous step (which is the given node that was generating these new steps)
+        upLeft.parentVertex = givenVertex;
+        upRight.parentVertex = givenVertex;
+        leftUp.parentVertex = givenVertex;
+        leftDown.parentVertex = givenVertex;
+        rightUp.parentVertex = givenVertex;
+        rightDown.parentVertex = givenVertex;
+        downLeft.parentVertex = givenVertex;
+        downRight.parentVertex = givenVertex;
+
+        // push to array to iterate through
         tempArr.push(upLeft);
         tempArr.push(upRight);
         tempArr.push(leftUp);
@@ -59,18 +123,18 @@ export default function knight() {
         tempArr.push(downLeft);
         tempArr.push(downRight);
 
-        // filter any positions that are out of bounds
-        tempArr = tempArr.filter((positionGroup) => {
-            const positionX = positionGroup[0];
-            const positionY = positionGroup[1];
+        // filter any positions that are out of bounds, or have already been visited before
+        tempArr = tempArr.filter((currentVertex) => {
+            const positionX = currentVertex.vertexValue[0];
+            const positionY = currentVertex.vertexValue[1];
 
-            // check if the position is already visited, then don't include in the tempArr
+            // check if the current vertex has been visited based on if they are inside visitedVertex array
             if (
-                visitedMoves.some((visitedGroup) => {
-                    const visitedX = visitedGroup[0];
-                    const visitedY = visitedGroup[1];
-
-                    if (visitedX === positionX && visitedY === positionY) {
+                visitedVertices.some((visitedVertex) => {
+                    if (
+                        visitedVertex.vertexValue[0] === positionX &&
+                        visitedVertex.vertexValue[1] === positionY
+                    ) {
                         return true;
                     }
                 })

@@ -35,3 +35,10 @@ the algorithm will use BFS to output all of the locations it took to end at that
 
     - also, the Odin Project mentions that there are MULTIPLE FASTEST PATHS. As long as the function returns ONE of those answers, its still correct. Provides
     the multiple fastest paths to some problems on the project page: https://www.theodinproject.com/lessons/javascript-knights-travails
+
+
+# new plan: 
+Like the node factories I made in the last projects, I am going to make an object that 
+has a visited property and a "parent" pointer property so that I can retrace the steps. 
+Printing out the BFS steps aren't going to give me the shortest path order, I need to keep track of what steps I took 
+to get to EVERY node.
