@@ -6,7 +6,7 @@ will take in 2 locations as parameters, the start location and the end location 
 the algorithm will use BFS to output all of the locations it took to end at that end location.
 
 # notes:
-    - standard chess board going from indices 0 to 7 on both dimensions
+    - standard chess board going from indices 0 to 7 on both dimensions (8x8 standard chess board)
     - we are using the knight (the little horse) which can only go forward 2 spaces and one space left or right or 
     vice versa, go one space to the left or right then forward or backward 2 spaces.
     - make sure when implementing BFS to SAVE the nodes/spaces the knight has already visited to prevent loops and to 
@@ -16,3 +16,22 @@ the algorithm will use BFS to output all of the locations it took to end at that
     - making a GUI for the chess board is NOT required. 
     - graphs are mainly a concept, but in this case, I do not need to make a literal graph object/data structure with verticies and 
     edges. 
+
+    - the 3 ways that khan academy came up with to represent a graph is with lists filled with edges to represent the relationships between verticies.
+        1. edge lists: a list of all of the connected edges in a graph 
+            ex: [[0, 1], [0, 6], [0,8]]
+
+        2. adjacency matricies: a matrix of 0 and 1 where the 1 is indicating that the location its at connects with the other vertex
+            ex: [[0, 0, 0, 1, 0],
+                 [0, 0, 1, 0, 0],
+                 [0, 1, 0, 1, 0],
+                 [1, 0, 0, 1, 0]]
+
+        3. adjacency list: a combination of edge list and adjacency matrix, where the list contains another list that contains verticies that are adjacent to it.
+            ex: [[1, 6, 8],
+                [0, 4, 6],
+                [1, 2],
+                [0]]
+
+    - also, the Odin Project mentions that there are MULTIPLE FASTEST PATHS. As long as the function returns ONE of those answers, its still correct. Provides
+    the multiple fastest paths to some problems on the project page: https://www.theodinproject.com/lessons/javascript-knights-travails
